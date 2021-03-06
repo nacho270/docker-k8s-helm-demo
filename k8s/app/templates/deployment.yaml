@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-k8s-helm-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: docker-k8s-helm-demo
+  template:
+    metadata:
+      labels:
+        app: docker-k8s-helm-demo
+    spec:
+      containers:
+          - name: app
+            image: {{ .Values.image.name }}:{{ .Values.image.tag }}
+            imagePullPolicy: IfNotPresent
+            ports:
+              - containerPort: 8080

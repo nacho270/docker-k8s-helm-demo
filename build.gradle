@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id "com.palantir.docker" version "0.26.0"
+}
+
+group 'com.nacho'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    javalinVersion = '3.13.3'
+    lombokVersion = '1.18.16'
+    mongoVersion = '3.12.8'
+    apacheCommonsConfig = '2.7'
+}
+
+dependencies {
+    compile group: 'io.javalin', name: 'javalin', version: javalinVersion
+    compile group: "org.slf4j", name: "slf4j-simple", version: "1.8.0-beta4"
+    implementation group: 'org.apache.commons', name: 'commons-configuration2', version: apacheCommonsConfig
+    implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+    implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    implementation group: 'org.mongodb', name: 'mongo-java-driver', version: mongoVersion
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.nacho.dockerk8shelm.demo.App'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+docker {
+    dependsOn build as Task
+    name "nacho270/${project.name}:${project.version}"
+    dockerfile file('Dockerfile')
+    files "build/libs/${project.name}-${project.version}.jar"
+    buildArgs(["JAR_FILE": "${project.name}-${project.version}.jar"])
+    tag 'nacho270', "nacho270/docker-k8s-helm-demo:${project.version}"
+}
