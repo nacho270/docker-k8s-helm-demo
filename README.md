@@ -1,26 +1,46 @@
-##Run local
-To understand the process:
+# Using docker, k8s and helm with java
+
+This is a simple app that exposes 2 endpoints to retrieve and increment a counter in mongodb.
+
+Avoided spring/maven and went for gradle/[Javalin](https://javalin.io/)  for the sake of variety.
+
+Used mongo to showcase kubernetes persistent volumes and secrets.
+
+## Run locally
+
+### From IDE
+
+- Run a local mongo: `docker run --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -d mongo:latest`
+
+- Run `com.nacho.dockerk8shelm.demo.App` with an environment variable `profile=dev`
+
+### Docker compose
+
+Simply do `docker compose up` from the root directory of the app.
+
+## Run K8S local
+To understand the process, run the following commands from the root directory of the app:
 
     gradle docker
-    docker images -- you'll the image ther 
+    docker images # you'll find the image there
     minukube ssh
-    docker images -- your image is not there and THIS where we need the image 
+    docker images ## the image is not there and THIS where we need the image. Kubernetes uses this docker repo to cache the images. 
 
 Now the real work:
     
-    - if mac/linux: eval $(minikube docker-env)
+    - if on mac/linux: eval $(minikube docker-env)
     - if windows: 
         - minikube docker-env
         - copy all the lines and run them
-        - you''ll that the last line is commented (REM), so run this: @FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env') DO @%i`
+        - you''ll see that the last line is commented (REM), so run this: @FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env') DO @%i`
     
     - gradle docker
-    - minukube ssh docker images -- the image is there!
+    - minukube ssh docker images ## the image is there!
 
     Remember: all the docker-env changes will vanish in anohter terminal and if you restart minikube. 
-    Make sure you build the image in the same terminal where you ran all the docker-env commands
+    Make sure you build the image in the same terminal where you previously ran all the docker-env commands
 
-##Helm
+## Helm
 
 `cd docker-k8s-helm-demo/k8s`
 
@@ -36,7 +56,7 @@ Now the real work:
 
 **Alternatively, you can enable the dashboard: `minikube dashboard`**
 
-##Ingress
+## Ingress
 
 Once everything is running:
 

@@ -1,7 +1,17 @@
 version: '3'
 services:
 
-   app:
-      image: nacho270/docker-k8s-helm-demo:1.0-SNAPSHOT
-      ports:
-         - 8080:8080
+  mongo:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+
+  app:
+    image: nacho270/docker-k8s-helm-demo:1.0-SNAPSHOT
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongo
