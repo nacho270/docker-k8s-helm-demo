@@ -10,7 +10,8 @@ Used mongo to showcase kubernetes persistent volumes and secrets.
 
 ### From IDE
 
-- Run a local mongo: `docker run --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -d mongo:latest`
+- Run a local
+  mongo: `docker run --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=root -d mongo:latest`
 
 - Run `com.nacho.dockerk8shelm.demo.App` with an environment variable `profile=dev`
 
@@ -19,6 +20,7 @@ Used mongo to showcase kubernetes persistent volumes and secrets.
 Simply do `docker compose up` from the root directory of the app.
 
 ## Run K8S local
+
 To understand the process, run the following commands from the root directory of the app:
 
     gradle docker
@@ -27,7 +29,7 @@ To understand the process, run the following commands from the root directory of
     docker images ## the image is not there and THIS where we need the image. Kubernetes uses this docker repo to cache the images. 
 
 Now the real work:
-    
+
     - if on mac/linux: eval $(minikube docker-env)
     - if windows: 
         - minikube docker-env
@@ -42,24 +44,22 @@ Now the real work:
 
 ### Install mongodb
 
-We don't want to create mongo every time in the real work. So we manage mongo independently of the app using plain kubernetes.
+We don't want to create mongo every time in the real work. So we manage mongo independently of the app using plain
+kubernetes.
 
 - cd into `k8s`
 - `kubectl create secret generic mongo-pass --from-literal mongoPass=root -n docker-k8s-helm-demo`
+- `kubectl apply -f app/mongo-persistent-volume-claim.yaml`
 - `kubectl apply -f app/mongo-deployment.yaml`
 - `kubectl apply -f app/mongo-clusterIP.yaml`
 
 ## Helm
 
-`cd docker-k8s-helm-demo/k8s`
-
-`helm install docker-k8s-helm-demo app`
-
-`helm uninstall docker-k8s-helm-demo app`
-
-`helm template app` 
-
-`helm template app > the-chart.yaml`
+- cd into`k8s`
+- To deploy the app:`helm install docker-k8s-helm-demo app`
+- To undeploy the app: `helm uninstall docker-k8s-helm-demo app`
+- To print the entire chart in the terminal: `helm template app`
+- To print the entire chart to a file: `helm template app > the-chart.yaml`
 
 **To check that everything is running: `kubectl get pods` and you should see the pod running + mongo.**
 
@@ -73,22 +73,22 @@ Once everything is running:
 
 Then you can either go with:
 
-- Option one 
-    
-    `minikube service docker-k8s-helm-demo --url`
+- Option one
 
-    Get url from the table:
-    
-    | NAMESPACE     | NAME                 |  TARGET PORT  | URL                    |
-    | :------------:|:--------------------:|:-------------:|:----------------------:|
-    | default       | docker-k8s-helm-demo |               | http://127.0.0.1:65451 |
+  `minikube service docker-k8s-helm-demo --url`
 
-    `curl http://127.0.0.1:65451`
+  Get url from the table:
+
+  | NAMESPACE     | NAME                 |  TARGET PORT  | URL                    |
+      | :------------:|:--------------------:|:-------------:|:----------------------:|
+  | default       | docker-k8s-helm-demo |               | http://127.0.0.1:65451 |
+
+  `curl http://127.0.0.1:65451`
 
 or
 
 - Option two
-    
-    `k port-forward deployment/docker-k8s-helm-demo 8080:8080`
-    
-    `curl localhost:8080`
+
+  `k port-forward deployment/docker-k8s-helm-demo 8080:8080`
+
+  `curl localhost:8080`
