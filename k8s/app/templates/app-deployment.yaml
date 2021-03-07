@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: docker-k8s-helm-demo
+  namespace: docker-k8s-helm-demo
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: docker-k8s-helm-demo
@@ -18,3 +19,6 @@ spec:
             imagePullPolicy: IfNotPresent
             ports:
               - containerPort: 8080
+            env:
+              - name: mongo.host
+                value: mongo-cluster-ip-service
