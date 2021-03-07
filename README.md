@@ -40,6 +40,15 @@ Now the real work:
     Remember: all the docker-env changes will vanish in anohter terminal and if you restart minikube. 
     Make sure you build the image in the same terminal where you previously ran all the docker-env commands
 
+### Install mongodb
+
+We don't want to create mongo every time in the real work. So we manage mongo independently of the app using plain kubernetes.
+
+- cd into `k8s`
+- `kubectl create secret generic mongo-pass --from-literal mongoPass=root -n docker-k8s-helm-demo`
+- `kubectl apply -f app/mongo-deployment.yaml`
+- `kubectl apply -f app/mongo-clusterIP.yaml`
+
 ## Helm
 
 `cd docker-k8s-helm-demo/k8s`
@@ -52,9 +61,9 @@ Now the real work:
 
 `helm template app > the-chart.yaml`
 
-**To check that everything is running: `kubectl get pods` and you should see the 3 pods running.**
+**To check that everything is running: `kubectl get pods` and you should see the pod running + mongo.**
 
-**Alternatively, you can enable the dashboard: `minikube dashboard`**
+**Alternatively, you can enable the dashboard: `minikube dashboard` or you can download [Lens](https://k8slens.dev/).**
 
 ## Ingress
 
