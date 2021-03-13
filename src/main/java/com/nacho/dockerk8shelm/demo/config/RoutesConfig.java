@@ -1,4 +1,4 @@
-package com.nacho.dockerk8shelm.demo.confg;
+package com.nacho.dockerk8shelm.demo.config;
 
 import com.nacho.dockerk8shelm.demo.repository.impl.MongoBasedCounterRepository;
 import com.nacho.dockerk8shelm.demo.service.CounterService;
