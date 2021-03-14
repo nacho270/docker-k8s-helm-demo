@@ -7,11 +7,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: docker-k8s-helm-demo
+      component: app
   template:
     metadata:
       labels:
-        app: docker-k8s-helm-demo
+        component: app
     spec:
       containers:
           - name: app
@@ -22,3 +22,8 @@ spec:
             env:
               - name: mongo.host
                 value: mongo-cluster-ip-service
+              - name: mongo.pass
+                valueFrom:
+                  secretKeyRef:
+                    name: mongo-pass
+                    key: mongoPass

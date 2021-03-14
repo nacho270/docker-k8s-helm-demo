@@ -1,7 +1,5 @@
 FROM openjdk:11
 
-VOLUME /tmp
-
 EXPOSE 8080
 
 ARG JAR_FILE

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: docker-k8s-helm-mongo-demo
+appVersion: "2.0"
+description: Helm chart for the mongodb database for docker-k8s-helm-demo
+version: 1.0.0
+type: application

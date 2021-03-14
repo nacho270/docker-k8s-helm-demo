@@ -2,16 +2,16 @@
 
 This is a simple app that exposes 2 endpoints to retrieve and increment a counter in mongodb.
 
-Avoided spring/maven and went for gradle/[Javalin](https://javalin.io/)  for the sake of variety.
+Avoided spring/maven and went for [Gradle](https://gradle.org/install/) / [Javalin](https://javalin.io/) for the sake of variety.
 
 The usage of mongo is only to showcase kubernetes persistent volume claims and secrets. The right tool for the app features would be redis.
 
 ## Requirements
 
 - Java 11
-- Gradle
-- Docker
-- Minikube
+- [Gradle](https://gradle.org/install/)
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/)
 
 ## Run locally
 
@@ -55,24 +55,33 @@ point minikube to the local docker and build the app image:
         - you''ll see that the last line is commented (REM), so run this: @FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env') DO @%i`
     - gradle build jar
     - gradle docker
-    - minukube ssh docker images ## the image is there!
+    - minukube ssh 
+    - docker images ## the image is there!
 
     Remember: all the docker-env changes will vanish in anohter terminal and if you restart minikube. 
     Make sure you build the image in the same terminal where you previously ran all the docker-env commands
 
-### Install mongodb
+### Basic configuration: Namespace and Secret
 
-We don't want to create a mongodb node every time in the real world. For that reason, we manage it independently of the app using plain kubernetes.
+First, we need to create the namespace and the secret:
 
 - cd into `k8s`
 - `kubectl apply -f namespace.yaml`
 - `kubectl config set-context --current --namespace=docker-k8s-helm-demo` <-- this will avoid you having to type `-n docker-k8s-helm-demo` on every kubernetes command
 - `kubectl create secret generic mongo-pass --from-literal mongoPass=root` <-- create the mongo password as a secret to be retrieved in the mongo-deployment.
-- `kubectl apply -f mongo-persistent-volume-claim.yaml`
-- `kubectl apply -f mongo-deployment.yaml`
-- `kubectl apply -f mongo-clusterIP.yaml`
 
-### Helm
+### Deploy mongodb
+
+We don't want to create a mongodb node every time in the real world. For that reason, we manage it independently of the app.
+
+You should run all of these commands to have mongodb running, or you can do the same with helm. This is only for illustration purposes.
+
+- cd into `k8s`
+- `kubectl apply -f database/templates/mongo-persistent-volume-claim.yaml`
+- `kubectl apply -f database/templates/mongo-deployment.yaml`
+- `kubectl apply -f database/templates/mongo-clusterIP.yaml`
+
+### Deploy app
 
 Helm helps to deploy the entire application kubernetes objects. One case where it's particularly useful is when you need
 to create all the services with different values for different environments such as: `dev`, `test`, `nft`, `prod`.
@@ -80,7 +89,8 @@ to create all the services with different values for different environments such
 By the default, the 'values.yaml' file is used, but a different file can be specified like this: `-f values-dev.yaml`.
 
 - cd into`k8s`
-- To deploy the app:`helm install docker-k8s-helm-demo app`
+- To deploy mongodb: `helm install docker-k8s-helm-mongo-demo database`
+- To deploy the app: `helm install docker-k8s-helm-demo app`
 - To undeploy the app: `helm uninstall docker-k8s-helm-demo app`
 - To print the entire chart in the terminal: `helm template app`
 - To print the entire chart to a file: `helm template app > the-chart.yaml`
@@ -103,7 +113,12 @@ Once you made sure everything is running:
 
 Then you can either go with one of these options:
 
-- Option one: `minikube service docker-k8s-helm-demo --url`
+- Option one:
+  
+  ``` shell
+  kubectl expose deployment docker-k8s-helm-demo --type=ClusterIP --port=8080
+  minikube service  docker-k8s-helm-demo -n docker-k8s-helm-demo --url
+  ```
 
   Get url from the table:
 
